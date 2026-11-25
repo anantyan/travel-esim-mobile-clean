@@ -6,6 +6,7 @@ import {
   getRegionFilterLabel,
   getTypeFilterLabel,
 } from "@/commons/constants/regions.constant";
+import { useCollapseSentinel } from "@/commons/hooks/use-collapse-sentinel";
 import { cn } from "@/commons/utils/cn";
 import type { EsimCatalogFilter } from "@/domain";
 import { EsimCatalogSkeleton } from "@/presentation/features/catalog/components/EsimCatalogSkeleton";
@@ -17,7 +18,7 @@ import {
   MagnifyingGlass,
   X,
 } from "@phosphor-icons/react";
-import { useDeferredValue, useEffect, useState } from "react";
+import { useDeferredValue, useEffect, useRef, useState } from "react";
 
 export interface TravelEsimCatalogPageProps {
   filter: EsimCatalogFilter;
@@ -34,6 +35,8 @@ export function TravelEsimCatalogPage({
   const [activeSheet, setActiveSheet] = useState<"region" | "type" | null>(
     null,
   );
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const { sentinelRef, isCollapsed } = useCollapseSentinel(56);
 
   // Sync only when external filter.search is cleared/changed externally (e.g. Reset All)
   useEffect(() => {
@@ -60,15 +63,24 @@ export function TravelEsimCatalogPage({
     onFilterChange({ search: "" });
   };
 
+  const handleExpandAndFocusSearch = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    searchInputRef.current?.focus({ preventScroll: true });
+  };
+
   return (
     <div className="flex flex-1 flex-col bg-[#252A86]">
-      <header className="px-4 pt-5 pb-5 text-white">
-        <div className="flex items-center gap-2.5">
+      <header
+        data-testid="catalog-pinned-header"
+        data-collapsed={isCollapsed ? "true" : "false"}
+        className="sticky top-0 z-30 flex h-14 items-center justify-between bg-[#252A86] px-3 text-white"
+      >
+        <div className="flex items-center gap-1.5">
           <button
             type="button"
             aria-label="Kembali atau reset filter"
             onClick={onResetAll}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full text-white transition-colors hover:bg-white/10 active:scale-95"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full text-white transition-colors hover:bg-white/10 active:scale-95"
           >
             <CaretLeft size={20} weight="bold" aria-hidden="true" />
           </button>
@@ -77,8 +89,27 @@ export function TravelEsimCatalogPage({
           </h1>
         </div>
 
-        <div className="relative mt-4 flex items-center">
+        <button
+          type="button"
+          data-testid="collapsed-search-trigger"
+          aria-label="Buka pencarian"
+          tabIndex={isCollapsed ? 0 : -1}
+          onClick={handleExpandAndFocusSearch}
+          className={cn(
+            "inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white transition-all duration-200 hover:bg-white/25 active:scale-95",
+            isCollapsed
+              ? "pointer-events-auto scale-100 opacity-100"
+              : "pointer-events-none scale-90 opacity-0",
+          )}
+        >
+          <MagnifyingGlass size={18} weight="bold" aria-hidden="true" />
+        </button>
+      </header>
+
+      <div className="bg-[#252A86] px-4 pt-1 pb-2.5 text-white">
+        <div className="relative flex items-center">
           <input
+            ref={searchInputRef}
             type="text"
             inputMode="search"
             enterKeyHint="search"
@@ -86,14 +117,14 @@ export function TravelEsimCatalogPage({
             onChange={(event) => handleSearchChange(event.target.value)}
             placeholder="Cari Produk yang Anda Mau"
             aria-label="Cari Produk yang Anda Mau"
-            className="w-full rounded-xl bg-[#161A5E] py-3 pr-11 pl-4 text-sm text-white placeholder:text-indigo-200/70 focus-visible:outline-2 focus-visible:outline-white/60"
+            className="w-full rounded-xl bg-[#161A5E] py-3 pr-11 pl-4 text-base text-white placeholder:text-indigo-200/70 focus-visible:outline-2 focus-visible:outline-white/60 sm:text-sm"
           />
           {searchInput.length > 0 ? (
             <button
               type="button"
               aria-label="Hapus pencarian"
               onClick={handleClearSearch}
-              className="absolute right-2.5 inline-flex h-7 w-7 items-center justify-center rounded-full text-indigo-100 transition-colors hover:bg-white/15"
+              className="absolute right-2 inline-flex h-8 w-8 items-center justify-center rounded-full text-indigo-100 transition-colors hover:bg-white/15"
             >
               <X size={16} weight="bold" aria-hidden="true" />
             </button>
@@ -106,8 +137,16 @@ export function TravelEsimCatalogPage({
             />
           )}
         </div>
+        <div ref={sentinelRef} aria-hidden="true" className="h-px w-full" />
+      </div>
 
-        <div className="mt-3.5 flex items-center gap-2.5">
+      <div
+        className={cn(
+          "sticky top-14 z-20 bg-[#252A86] px-4 pt-1 pb-3.5 transition-shadow duration-200",
+          isCollapsed && "shadow-[0_8px_20px_-8px_rgba(15,23,42,0.35)]",
+        )}
+      >
+        <div className="flex items-center gap-2.5">
           <button
             type="button"
             data-testid="filter-region-chip"
@@ -115,7 +154,7 @@ export function TravelEsimCatalogPage({
             aria-expanded={activeSheet === "region"}
             onClick={() => setActiveSheet("region")}
             className={cn(
-              "inline-flex items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2 text-xs font-semibold text-white transition-all active:scale-[0.98]",
+              "inline-flex min-h-[38px] items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2 text-xs font-semibold text-white transition-all active:scale-[0.98]",
               filter.region !== "all"
                 ? "border-white bg-white/18"
                 : "border-white/75 bg-transparent hover:bg-white/10",
@@ -132,7 +171,7 @@ export function TravelEsimCatalogPage({
             aria-expanded={activeSheet === "type"}
             onClick={() => setActiveSheet("type")}
             className={cn(
-              "inline-flex items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2 text-xs font-semibold text-white transition-all active:scale-[0.98]",
+              "inline-flex min-h-[38px] items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2 text-xs font-semibold text-white transition-all active:scale-[0.98]",
               filter.type !== "all"
                 ? "border-white bg-white/18"
                 : "border-white/75 bg-transparent hover:bg-white/10",
@@ -142,9 +181,9 @@ export function TravelEsimCatalogPage({
             <CaretDown size={13} weight="bold" aria-hidden="true" />
           </button>
         </div>
-      </header>
+      </div>
 
-      <main className="flex flex-1 flex-col rounded-t-[28px] bg-[#F8F9FC] px-4 pt-5 pb-10">
+      <main className="relative z-10 flex flex-1 flex-col rounded-t-[28px] bg-[#F8F9FC] px-4 pt-5 pb-12">
         {isLoading ? (
           <EsimCatalogSkeleton />
         ) : products.length === 0 ? (

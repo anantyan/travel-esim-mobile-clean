@@ -20,6 +20,17 @@ export default defineConfig({
     alias: {
       "@": resolve(__dirname, "./src"),
     },
+    dedupe: ["react", "react-dom"],
+  },
+  optimizeDeps: {
+    include: [
+      "react",
+      "react-dom",
+      "@tanstack/react-router",
+      "@tanstack/react-query",
+      "zustand",
+      "zustand/react/shallow",
+    ],
   },
   build: {
     target: "esnext",

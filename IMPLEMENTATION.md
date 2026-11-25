@@ -28,11 +28,12 @@
 
 ---
 
-## Phase 3: Product Detail Page (`/products/$slug` — Figma Screen 4)
-- [ ] Implement full `/products/$slug` page via `GetEsimDetailUseCase` with full-bleed hero image carousel & indicator dots.
-- [ ] Display dynamic price, `Cakupan negara` card, interactive `Ukuran Data` (`3GB`, `5GB`, `10GB`, `15GB`) and `Pilih Jumlah Hari` (`07`, `14`, `24`, `30`) selector pills, plus 5-bullet `Deskripsi`.
-- [ ] Implement sticky bottom CTA (`Pesan Sekarang`) storing variant & product selection in `useCheckoutFlowStore` (`Zustand v5`) and navigating to `/checkout/order-detail`.
-- [ ] Add unit, integration, and E2E tests for variant pricing selection and missing-slug fallback.
+## Phase 3: Product Detail Page (`/products/$slug` — Figma Screen 4) & Collapsing Scroll Audit
+- [x] Implement `/fe-audit` zero-jitter collapsing scroll header on Catalog (`/`): pinned `Travel eSIM` bar + compact search trigger + sticky filter chips strip via `IntersectionObserver` sentinel (`useCollapseSentinel`).
+- [x] Implement full `/products/$slug` page via `GetEsimDetailUseCase` with sticky full-bleed hero image carousel, indicator dots, and collapsing `#252A86` app bar on scroll.
+- [x] Display dynamic price, `Cakupan negara` card, interactive `Ukuran Data` (`3GB`, `5GB`, `10GB`, `15GB`) and `Pilih Jumlah Hari` (`07`, `14`, `24`, `30`) selector pills, plus 5-bullet `Deskripsi`.
+- [x] Implement sticky bottom CTA (`Pesan Sekarang`) storing variant & product selection in `useCheckoutFlowStore` (`Zustand v5`) and navigating to `/checkout/order-detail` (Phase 4 stub).
+- [x] Add unit, integration, and E2E tests for collapsing scroll behavior, variant pricing selection, and missing-slug fallback.
 
 ---
 
@@ -66,3 +67,7 @@
 ### 2026-11-25 — Phase 2: Travel eSIM Catalog, Search & Bottom Sheets
 - **Figma Alignment**: Integrated all 7 Figma UI screens into our domain/data specifications (`coverageCountries`, `dataSizeOptions`, `dayOptions`, `Saldo / VA BCA / Mandiri / BRI`).
 - **Catalog & Portal Sheets**: Built `#252A86` `Travel eSIM` header, live search input, `FilterBottomSheet` (`Pilih Region` & `Pilih Jenis Produk`) strictly constrained inside `#mobile-shell-portal` (`430px`), 2-column destination grid, Zod-validated TanStack Router search params, and `/products/$slug` navigation stub.
+
+### 2026-11-25 — `/fe-audit` Collapsing Scroll Architecture & Phase 3 Detail Produk
+- **Audit Remediation**: Replaced static scrolling headers with zero-listener `IntersectionObserver` sentinel collapsing bars (`useCollapseSentinel`): Catalog keeps `Travel eSIM` + quick-search icon + filter pills sticky without jitter, while Product Detail glides the white sheet over a sticky `280px` full-bleed hero carousel and transitions the top bar to solid `#252A86` with title & live price.
+- **Phase 3 Product Detail**: Implemented `calculateVariantPriceIdr`, interactive `Ukuran Data` + `Pilih Jumlah Hari` pills, `Cakupan negara`, 5-bullet `Deskripsi`, sticky `Pesan Sekarang` CTA, and `/checkout/order-detail` stub.

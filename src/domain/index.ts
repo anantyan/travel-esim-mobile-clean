@@ -15,6 +15,7 @@ export {
   esimRegionFilterSchema,
   esimTypeFilterSchema,
 } from "./schemas/esim-filter.schema";
+export { calculateVariantPriceIdr } from "./use-cases/calculate-variant-price";
 export { CreateOrderReceiptUseCase } from "./use-cases/create-order-receipt.use-case";
 export { GetEsimCatalogUseCase } from "./use-cases/get-esim-catalog.use-case";
 export { GetEsimDetailUseCase } from "./use-cases/get-esim-detail.use-case";

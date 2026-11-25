@@ -3,6 +3,7 @@ import {
   CreateOrderReceiptUseCase,
   GetEsimCatalogUseCase,
   GetEsimDetailUseCase,
+  calculateVariantPriceIdr,
   esimCatalogFilterSchema,
 } from "@/domain";
 import { describe, expect, it } from "vitest";
@@ -78,5 +79,11 @@ describe("Domain Use Cases (Static eSIM Repository)", () => {
     expect(receipt.referenceCode).toMatch(/^MKP-ESIM-/);
     expect(receipt.activationCode).toContain("LPA:1$esim.mkpmobile.id$");
     expect(receipt.purchasedAtIso).toBe(fixedDate.toISOString());
+  });
+
+  it("calculates deterministic variant pricing across data sizes and day tiers", () => {
+    expect(calculateVariantPriceIdr(69000, "3GB", 7)).toBe(69000);
+    expect(calculateVariantPriceIdr(69000, "10GB", 14)).toBe(164000);
+    expect(calculateVariantPriceIdr(52000, "15GB", 30)).toBe(223000);
   });
 });
