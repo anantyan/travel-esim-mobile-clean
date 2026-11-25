@@ -76,3 +76,7 @@
 - **Step 1 (`Detail Pemesan`)**: Built `CheckoutHeader` (`1 — 2`), `OrderPackageSummary`, and `Data Pelanggan` form validated by `React Hook Form` + `customerInfoSchema` (`Zod`).
 - **Step 2 (`Metode Pembayaran`)**: Built `✓ — 2` stepper, `Saldo (Rp200.000)` balance guard, `VA BCA`, `VA Mandiri`, `VA BRI` radio cards, and `Harga + Biaya Layanan = Total` summary.
 - **Step 3 (`Invoice`)**: Wired `CreateOrderReceiptUseCase` with WIB timestamp, Copy-to-Clipboard invoice number, automatic WhatsApp & Email privacy masking (`maskWhatsappNumber` / `maskEmailAddress`), and ephemeral Zustand reset on `Selesai`.
+
+### 2026-11-25 — `/fe-audit` Mobile Touch Slide & Subpixel Concentric Radio Precision
+- **Concentric SVG Radio (`RadioIndicator`)**: Replaced CSS border+flex circle radios in `FilterBottomSheet` and `PaymentMethodPage` with a shared `24x24` SVG (`cx="12" cy="12"`) so outer ring and inner dot remain subpixel-centered across 1x–3x mobile DPR screens.
+- **Mobile Touch Gestures**: Added 60fps pointer drag-to-dismiss (`translate3d` direct DOM updates + body scroll lock + slide-up animation) to `FilterBottomSheet` and native horizontal `snap-x snap-mandatory` scroll carousel (`touch-pan-x`) to `ProductDetailPage`.

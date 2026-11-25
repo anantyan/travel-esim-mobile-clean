@@ -42,6 +42,14 @@ describe("ProductDetailPage & Variant Selection Integration", () => {
     expect(
       await screen.findByRole("heading", { name: "eSIM Singapore" }),
     ).toBeInTheDocument();
+    expect(screen.getByTestId("detail-photo-carousel")).toBeInTheDocument();
+    expect(screen.getByAltText("eSIM Singapore - Foto 1")).toBeInTheDocument();
+    expect(screen.getByAltText("eSIM Singapore - Foto 2")).toBeInTheDocument();
+    expect(screen.getByAltText("eSIM Singapore - Foto 3")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Foto 2 dari 3" }));
+    expect(
+      screen.getByRole("button", { name: "Foto 2 dari 3" }),
+    ).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByText("Singapore")).toBeInTheDocument();
     expect(screen.getByTestId("detail-dynamic-price")).toHaveTextContent(
       "Rp69.000",

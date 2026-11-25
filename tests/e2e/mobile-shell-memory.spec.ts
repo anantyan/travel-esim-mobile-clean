@@ -46,7 +46,38 @@ test.describe("Travel eSIM Full Journey, Collapsing Headers & Locked 430px Shell
       "false",
     );
 
-    // Filter by Region: Amerika -> Reset
+    // Filter by Region: Amerika -> verify concentric SVG radio -> Reset -> drag-to-dismiss
+    await page.getByTestId("filter-region-chip").click();
+    await expect(page.getByTestId("region-filter-sheet")).toBeVisible();
+
+    const radioConcentric = await page
+      .getByTestId("region-filter-sheet")
+      .locator("svg circle")
+      .evaluateAll((circles) => {
+        if (circles.length < 2) return false;
+        const cx0 = circles[0]?.getAttribute("cx");
+        const cy0 = circles[0]?.getAttribute("cy");
+        const cx1 = circles[1]?.getAttribute("cx");
+        const cy1 = circles[1]?.getAttribute("cy");
+        return cx0 === "12" && cy0 === "12" && cx1 === "12" && cy1 === "12";
+      });
+    expect(radioConcentric).toBe(true);
+
+    // Drag bottom sheet downward to dismiss, then reopen to apply filter
+    const handleBox = await page
+      .getByTestId("region-filter-drag-handle")
+      .boundingBox();
+    expect(handleBox).not.toBeNull();
+    if (handleBox) {
+      const startX = handleBox.x + handleBox.width / 2;
+      const startY = handleBox.y + handleBox.height / 2;
+      await page.mouse.move(startX, startY);
+      await page.mouse.down();
+      await page.mouse.move(startX, startY + 130, { steps: 6 });
+      await page.mouse.up();
+      await expect(page.getByTestId("region-filter-sheet")).toBeHidden();
+    }
+
     await page.getByTestId("filter-region-chip").click();
     await expect(page.getByTestId("region-filter-sheet")).toBeVisible();
     await page.getByRole("radio", { name: "Amerika" }).click();
@@ -62,12 +93,21 @@ test.describe("Travel eSIM Full Journey, Collapsing Headers & Locked 430px Shell
     await page.getByRole("button", { name: "Terapkan" }).click();
     await expect(page.getByText("eSIM Singapore")).toBeVisible();
 
-    // Navigate to eSIM Singapore Detail & verify collapsing hero
+    // Navigate to eSIM Singapore Detail & verify swipeable carousel + collapsing hero
     await page.getByTestId("esim-card-esim-singapore").click();
     await expect(page).toHaveURL(/\/products\/esim-singapore/);
     await expect(
       page.getByRole("heading", { name: "eSIM Singapore" }),
     ).toBeVisible();
+
+    // Swipe/scroll photo carousel horizontally to slide 2
+    const carousel = page.getByTestId("detail-photo-carousel");
+    await carousel.evaluate((el) => {
+      el.scrollTo({ left: el.clientWidth, behavior: "instant" });
+    });
+    await expect(
+      page.getByRole("button", { name: "Foto 2 dari 3" }),
+    ).toHaveAttribute("aria-pressed", "true");
 
     // Select 5GB + 07 Hari -> Rp93.000 (affordable via Saldo Rp200.000!)
     await page.getByRole("button", { name: "5GB", exact: true }).click();

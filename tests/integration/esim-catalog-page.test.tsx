@@ -6,7 +6,7 @@ import {
   createMemoryHistory,
   createRouter,
 } from "@tanstack/react-router";
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 
@@ -107,6 +107,37 @@ describe("Travel eSIM Catalog & Bottom Sheet Integration", () => {
 
     await waitFor(() => {
       expect(screen.getByText("eSIM Singapore")).toBeInTheDocument();
+    });
+  });
+
+  it("dismisses Pilih Region bottom sheet when dragged downward via touch/pointer", async () => {
+    const user = userEvent.setup();
+    renderCatalogRoute("/");
+
+    await screen.findByText("eSIM Singapore");
+    await user.click(screen.getByTestId("filter-region-chip"));
+
+    const dragHandle = screen.getByTestId("region-filter-drag-handle");
+    fireEvent.pointerDown(dragHandle, {
+      pointerId: 1,
+      pointerType: "touch",
+      clientY: 300,
+    });
+    fireEvent.pointerMove(dragHandle, {
+      pointerId: 1,
+      pointerType: "touch",
+      clientY: 430,
+    });
+    fireEvent.pointerUp(dragHandle, {
+      pointerId: 1,
+      pointerType: "touch",
+      clientY: 430,
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole("dialog", { name: "Pilih Region" }),
+      ).not.toBeInTheDocument();
     });
   });
 });

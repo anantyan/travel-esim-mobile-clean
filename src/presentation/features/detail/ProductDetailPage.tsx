@@ -13,7 +13,7 @@ import {
   Lightning,
 } from "@phosphor-icons/react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export interface ProductDetailPageProps {
   slug: string;
@@ -29,6 +29,7 @@ export function ProductDetailPage({ slug }: ProductDetailPageProps) {
   const [selectedDataSize, setSelectedDataSize] = useState("3GB");
   const [selectedDays, setSelectedDays] = useState(7);
   const [failedSlides, setFailedSlides] = useState<Record<number, boolean>>({});
+  const carouselRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!product) {
@@ -38,6 +39,10 @@ export function ProductDetailPage({ slug }: ProductDetailPageProps) {
     setFailedSlides({});
     setSelectedDataSize(product.dataSizeOptions[0] ?? "3GB");
     setSelectedDays(product.dayOptions[0] ?? 7);
+    carouselRef.current?.scrollTo({
+      left: 0,
+      behavior: "instant" as ScrollBehavior,
+    });
   }, [product]);
 
   if (isLoading) {
@@ -91,12 +96,22 @@ export function ProductDetailPage({ slug }: ProductDetailPageProps) {
 
   const gallery =
     product.galleryUrls.length > 0 ? product.galleryUrls : [product.imageUrl];
-  const activeImageUrl = gallery[activeSlideIndex] ?? product.imageUrl;
   const currentPriceIdr = calculateVariantPriceIdr(
     product.priceIdr,
     selectedDataSize,
     selectedDays,
   );
+
+  const handleSelectSlide = (idx: number) => {
+    setActiveSlideIndex(idx);
+    const el = carouselRef.current;
+    if (el && el.clientWidth > 0) {
+      el.scrollTo({
+        left: idx * el.clientWidth,
+        behavior: "smooth",
+      });
+    }
+  };
 
   const handleOrderNow = () => {
     setSelectedVariant({
@@ -159,28 +174,56 @@ export function ProductDetailPage({ slug }: ProductDetailPageProps) {
       </header>
 
       <div className="sticky top-0 z-0 h-[280px] w-full overflow-hidden bg-slate-900">
-        {failedSlides[activeSlideIndex] ? (
-          <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-[#252A86] text-white">
-            <GlobeHemisphereEast
-              size={44}
-              weight="duotone"
-              aria-hidden="true"
-            />
-            <span className="text-sm font-semibold">{product.name}</span>
-          </div>
-        ) : (
-          <img
-            src={activeImageUrl}
-            alt={product.name}
-            onError={() =>
-              setFailedSlides((prev) => ({
-                ...prev,
-                [activeSlideIndex]: true,
-              }))
+        <div
+          ref={carouselRef}
+          data-testid="detail-photo-carousel"
+          onScroll={(event) => {
+            const el = event.currentTarget;
+            if (el.clientWidth <= 0) {
+              return;
             }
-            className="h-full w-full object-cover"
-          />
-        )}
+            const nextIdx = Math.round(el.scrollLeft / el.clientWidth);
+            if (
+              nextIdx !== activeSlideIndex &&
+              nextIdx >= 0 &&
+              nextIdx < gallery.length
+            ) {
+              setActiveSlideIndex(nextIdx);
+            }
+          }}
+          className="flex h-full w-full touch-pan-x snap-x snap-mandatory overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {gallery.map((url, idx) => (
+            <div
+              key={url}
+              className="h-full w-full shrink-0 snap-center snap-always"
+            >
+              {failedSlides[idx] ? (
+                <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-[#252A86] text-white">
+                  <GlobeHemisphereEast
+                    size={44}
+                    weight="duotone"
+                    aria-hidden="true"
+                  />
+                  <span className="text-sm font-semibold">{product.name}</span>
+                </div>
+              ) : (
+                <img
+                  src={url}
+                  alt={`${product.name} - Foto ${idx + 1}`}
+                  draggable={false}
+                  onError={() =>
+                    setFailedSlides((prev) => ({
+                      ...prev,
+                      [idx]: true,
+                    }))
+                  }
+                  className="h-full w-full select-none object-cover"
+                />
+              )}
+            </div>
+          ))}
+        </div>
 
         <div
           aria-hidden="true"
@@ -190,7 +233,7 @@ export function ProductDetailPage({ slug }: ProductDetailPageProps) {
         {gallery.length > 1 && (
           <div
             aria-label="Galeri foto produk"
-            className="absolute inset-x-0 bottom-10 z-10 flex items-center justify-center gap-1.5"
+            className="absolute inset-x-0 bottom-9 z-10 flex items-center justify-center gap-0.5"
           >
             {gallery.map((url, idx) => {
               const isActive = idx === activeSlideIndex;
@@ -200,14 +243,19 @@ export function ProductDetailPage({ slug }: ProductDetailPageProps) {
                   type="button"
                   aria-label={`Foto ${idx + 1} dari ${gallery.length}`}
                   aria-pressed={isActive}
-                  onClick={() => setActiveSlideIndex(idx)}
-                  className={cn(
-                    "h-1.5 rounded-full transition-all duration-200",
-                    isActive
-                      ? "w-6 bg-white"
-                      : "w-1.5 bg-white/55 hover:bg-white/80",
-                  )}
-                />
+                  onClick={() => handleSelectSlide(idx)}
+                  className="p-1"
+                >
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      "block h-1.5 rounded-full transition-all duration-200",
+                      isActive
+                        ? "w-6 bg-white"
+                        : "w-1.5 bg-white/55 hover:bg-white/80",
+                    )}
+                  />
+                </button>
               );
             })}
           </div>

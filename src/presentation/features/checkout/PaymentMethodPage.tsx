@@ -1,4 +1,5 @@
 import { Button } from "@/commons/components/ui/Button";
+import { RadioIndicator } from "@/commons/components/ui/RadioIndicator";
 import { cn } from "@/commons/utils/cn";
 import {
   formatOrderDateDdMmYyyy,
@@ -249,19 +250,10 @@ export function PaymentMethodPage() {
                             {formatRupiah(method.balanceIdr)}
                           </span>
                         )}
-                        <span
-                          aria-hidden="true"
-                          className={cn(
-                            "pointer-events-none flex h-6 w-6 items-center justify-center rounded-full transition-colors",
-                            isSelected && !disabled
-                              ? "border-2 border-[#252A86] bg-white"
-                              : "border-[1.5px] border-slate-300 bg-white",
-                          )}
-                        >
-                          {isSelected && !disabled && (
-                            <span className="h-3 w-3 rounded-full bg-[#252A86]" />
-                          )}
-                        </span>
+                        <RadioIndicator
+                          checked={isSelected}
+                          disabled={disabled}
+                        />
                       </div>
                     </label>
                   );
