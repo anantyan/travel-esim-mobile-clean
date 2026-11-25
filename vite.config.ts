@@ -30,6 +30,8 @@ export default defineConfig({
       "@tanstack/react-query",
       "zustand",
       "zustand/react/shallow",
+      "react-hook-form",
+      "@hookform/resolvers/zod",
     ],
   },
   build: {

@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './../../presentation/routes/__root'
 import { Route as IndexRouteImport } from './../../presentation/routes/index'
 import { Route as CheckoutOrderDetailRouteImport } from './../../presentation/routes/checkout.order-detail'
+import { Route as CheckoutPaymentRouteImport } from './../../presentation/routes/checkout.payment'
+import { Route as CheckoutReceiptRouteImport } from './../../presentation/routes/checkout.receipt'
 import { Route as ProductsSlugRouteImport } from './../../presentation/routes/products.$slug'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +25,16 @@ const CheckoutOrderDetailRoute = CheckoutOrderDetailRouteImport.update({
   path: '/checkout/order-detail',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CheckoutPaymentRoute = CheckoutPaymentRouteImport.update({
+  id: '/checkout/payment',
+  path: '/checkout/payment',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutReceiptRoute = CheckoutReceiptRouteImport.update({
+  id: '/checkout/receipt',
+  path: '/checkout/receipt',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductsSlugRoute = ProductsSlugRouteImport.update({
   id: '/products/$slug',
   path: '/products/$slug',
@@ -32,30 +44,54 @@ const ProductsSlugRoute = ProductsSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/checkout/order-detail': typeof CheckoutOrderDetailRoute
+  '/checkout/payment': typeof CheckoutPaymentRoute
+  '/checkout/receipt': typeof CheckoutReceiptRoute
   '/products/$slug': typeof ProductsSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/checkout/order-detail': typeof CheckoutOrderDetailRoute
+  '/checkout/payment': typeof CheckoutPaymentRoute
+  '/checkout/receipt': typeof CheckoutReceiptRoute
   '/products/$slug': typeof ProductsSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/checkout/order-detail': typeof CheckoutOrderDetailRoute
+  '/checkout/payment': typeof CheckoutPaymentRoute
+  '/checkout/receipt': typeof CheckoutReceiptRoute
   '/products/$slug': typeof ProductsSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/checkout/order-detail' | '/products/$slug'
+  fullPaths:
+    | '/'
+    | '/checkout/order-detail'
+    | '/checkout/payment'
+    | '/checkout/receipt'
+    | '/products/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/checkout/order-detail' | '/products/$slug'
-  id: '__root__' | '/' | '/checkout/order-detail' | '/products/$slug'
+  to:
+    | '/'
+    | '/checkout/order-detail'
+    | '/checkout/payment'
+    | '/checkout/receipt'
+    | '/products/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/checkout/order-detail'
+    | '/checkout/payment'
+    | '/checkout/receipt'
+    | '/products/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CheckoutOrderDetailRoute: typeof CheckoutOrderDetailRoute
+  CheckoutPaymentRoute: typeof CheckoutPaymentRoute
+  CheckoutReceiptRoute: typeof CheckoutReceiptRoute
   ProductsSlugRoute: typeof ProductsSlugRoute
 }
 
@@ -75,6 +111,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutOrderDetailRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/checkout/payment': {
+      id: '/checkout/payment'
+      path: '/checkout/payment'
+      fullPath: '/checkout/payment'
+      preLoaderRoute: typeof CheckoutPaymentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout/receipt': {
+      id: '/checkout/receipt'
+      path: '/checkout/receipt'
+      fullPath: '/checkout/receipt'
+      preLoaderRoute: typeof CheckoutReceiptRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/products/$slug': {
       id: '/products/$slug'
       path: '/products/$slug'
@@ -88,6 +138,8 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CheckoutOrderDetailRoute: CheckoutOrderDetailRoute,
+  CheckoutPaymentRoute: CheckoutPaymentRoute,
+  CheckoutReceiptRoute: CheckoutReceiptRoute,
   ProductsSlugRoute: ProductsSlugRoute,
 }
 export const routeTree = rootRouteImport

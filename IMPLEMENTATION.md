@@ -38,10 +38,10 @@
 ---
 
 ## Phase 4: 2-Step Checkout (`Detail Pemesanan` -> `Metode Pembayaran` -> `Invoice`, Figma Screen 5–7)
-- [ ] Implement Step 1 (`/checkout/order-detail`) with `1 — 2` header stepper, `Ringkasan Paket`, and `Data Pelanggan` form (`Nama`, `Alamat Email`, `Nomor Whatsapp`) validated via `React Hook Form` + `Zod`.
-- [ ] Implement Step 2 (`/checkout/payment`) with `✓ — 2` header stepper, `Saldo (Rp200.000)`, `VA BCA`, `VA Mandiri`, `VA BRI`, fee calculation, and `Lanjutkan` CTA.
-- [ ] Execute `CreateOrderReceiptUseCase` and render `/checkout/receipt` (`Invoice`) with `✓ — ✓` stepper, Copy Invoice button, masked WhatsApp & Email privacy display, and `Selesai` CTA.
-- [ ] Add complete checkout flow E2E test and V8 Heap memory leak check across repeated multi-page navigation.
+- [x] Implement Step 1 (`/checkout/order-detail`) with `1 — 2` header stepper, `Ringkasan Paket`, and `Data Pelanggan` form (`Nama`, `Alamat Email`, `Nomor Whatsapp`) validated via `React Hook Form` + `Zod`.
+- [x] Implement Step 2 (`/checkout/payment`) with `✓ — 2` header stepper, `Saldo (Rp200.000)`, `VA BCA`, `VA Mandiri`, `VA BRI`, fee calculation, and `Lanjutkan` CTA.
+- [x] Execute `CreateOrderReceiptUseCase` and render `/checkout/receipt` (`Invoice`) with `✓ — ✓` stepper, Copy Invoice button, masked WhatsApp & Email privacy display, and `Selesai` CTA.
+- [x] Add complete checkout flow E2E test and V8 Heap memory leak check across repeated multi-page navigation.
 
 ---
 
@@ -71,3 +71,8 @@
 ### 2026-11-25 — `/fe-audit` Collapsing Scroll Architecture & Phase 3 Detail Produk
 - **Audit Remediation**: Replaced static scrolling headers with zero-listener `IntersectionObserver` sentinel collapsing bars (`useCollapseSentinel`): Catalog keeps `Travel eSIM` + quick-search icon + filter pills sticky without jitter, while Product Detail glides the white sheet over a sticky `280px` full-bleed hero carousel and transitions the top bar to solid `#252A86` with title & live price.
 - **Phase 3 Product Detail**: Implemented `calculateVariantPriceIdr`, interactive `Ukuran Data` + `Pilih Jumlah Hari` pills, `Cakupan negara`, 5-bullet `Deskripsi`, sticky `Pesan Sekarang` CTA, and `/checkout/order-detail` stub.
+
+### 2026-11-25 — Phase 4: Complete 2-Step Checkout & Invoice
+- **Step 1 (`Detail Pemesan`)**: Built `CheckoutHeader` (`1 — 2`), `OrderPackageSummary`, and `Data Pelanggan` form validated by `React Hook Form` + `customerInfoSchema` (`Zod`).
+- **Step 2 (`Metode Pembayaran`)**: Built `✓ — 2` stepper, `Saldo (Rp200.000)` balance guard, `VA BCA`, `VA Mandiri`, `VA BRI` radio cards, and `Harga + Biaya Layanan = Total` summary.
+- **Step 3 (`Invoice`)**: Wired `CreateOrderReceiptUseCase` with WIB timestamp, Copy-to-Clipboard invoice number, automatic WhatsApp & Email privacy masking (`maskWhatsappNumber` / `maskEmailAddress`), and ephemeral Zustand reset on `Selesai`.

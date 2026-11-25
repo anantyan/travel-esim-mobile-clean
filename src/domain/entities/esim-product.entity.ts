@@ -30,11 +30,29 @@ export interface PaymentMethod {
   readonly description: string;
 }
 
+export interface ReceiptCustomerSnapshot {
+  readonly fullName: string;
+  readonly email: string;
+  readonly whatsapp: string;
+  readonly maskedEmail: string;
+  readonly maskedWhatsapp: string;
+}
+
 export interface OrderReceipt {
+  readonly invoiceNumber: string;
+  readonly referenceNumber: string;
   readonly referenceCode: string;
   readonly product: EsimProduct;
   readonly paymentMethod: PaymentMethod;
+  readonly selectedDataSize: string;
+  readonly selectedDays: number;
+  readonly quantity: number;
+  readonly customer: ReceiptCustomerSnapshot;
+  readonly packagePriceIdr: number;
+  readonly feeIdr: number;
   readonly totalPaidIdr: number;
+  readonly transactionDateLabel: string;
+  readonly transactionTimeWibLabel: string;
   readonly activationCode: string;
   readonly purchasedAtIso: string;
 }

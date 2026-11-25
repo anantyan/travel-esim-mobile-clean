@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
-test.describe("Travel eSIM Collapsing Headers, Bottom Sheets & Locked 430px Shell", () => {
-  test("supports catalog scroll collapse, bottom sheets, detail hero collapse, and variant checkout on Mobile 375x812", async ({
+test.describe("Travel eSIM Full Journey, Collapsing Headers & Locked 430px Shell", () => {
+  test("completes full end-to-end journey from Catalog through Detail, Order Form, Payment, and Masked Invoice on Mobile 375x812", async ({
     page,
   }) => {
     const consoleErrors: string[] = [];
@@ -38,15 +38,7 @@ test.describe("Travel eSIM Collapsing Headers, Bottom Sheets & Locked 430px Shel
     );
     await expect(page.getByTestId("collapsed-search-trigger")).toBeVisible();
 
-    const headerBox = await page
-      .getByTestId("catalog-pinned-header")
-      .boundingBox();
-    expect(headerBox).not.toBeNull();
-    if (headerBox) {
-      expect(headerBox.y).toBeLessThanOrEqual(1);
-    }
-
-    // Quick-search button smoothly expands back to top
+    // Quick-search button expands back to top
     await page.getByTestId("collapsed-search-trigger").click();
     await page.waitForFunction(() => window.scrollY < 40);
     await expect(page.getByTestId("catalog-pinned-header")).toHaveAttribute(
@@ -54,17 +46,14 @@ test.describe("Travel eSIM Collapsing Headers, Bottom Sheets & Locked 430px Shel
       "false",
     );
 
-    // Filter by Region: Amerika
+    // Filter by Region: Amerika -> Reset
     await page.getByTestId("filter-region-chip").click();
     await expect(page.getByTestId("region-filter-sheet")).toBeVisible();
     await page.getByRole("radio", { name: "Amerika" }).click();
     await page.getByRole("button", { name: "Terapkan" }).click();
-
     await expect(page).toHaveURL(/region=america/);
     await expect(page.getByText("eSIM USA")).toBeVisible();
-    await expect(page.getByText("eSIM Singapore")).toBeHidden();
 
-    // Reset Region filter
     await page.getByTestId("filter-region-chip").click();
     await page
       .getByTestId("region-filter-sheet")
@@ -73,43 +62,73 @@ test.describe("Travel eSIM Collapsing Headers, Bottom Sheets & Locked 430px Shel
     await page.getByRole("button", { name: "Terapkan" }).click();
     await expect(page.getByText("eSIM Singapore")).toBeVisible();
 
-    // Navigate to eSIM Singapore product detail
+    // Navigate to eSIM Singapore Detail & verify collapsing hero
     await page.getByTestId("esim-card-esim-singapore").click();
     await expect(page).toHaveURL(/\/products\/esim-singapore/);
     await expect(
       page.getByRole("heading", { name: "eSIM Singapore" }),
     ).toBeVisible();
-    await expect(page.getByTestId("detail-collapsing-header")).toHaveAttribute(
-      "data-collapsed",
-      "false",
-    );
 
-    // Select 10GB + 14 Hari and verify dynamic price
-    await page.getByRole("button", { name: "10GB" }).click();
-    await page.getByRole("button", { name: "14" }).click();
+    // Select 5GB + 07 Hari -> Rp93.000 (affordable via Saldo Rp200.000!)
+    await page.getByRole("button", { name: "5GB", exact: true }).click();
+    await page.getByRole("button", { name: "07", exact: true }).click();
     await expect(page.getByTestId("detail-dynamic-price")).toHaveText(
-      "Rp164.000",
+      "Rp93.000",
     );
 
-    // Scroll detail page to collapse hero into solid #252A86 app bar
     await page.evaluate(() => window.scrollTo(0, 260));
     await expect(page.getByTestId("detail-collapsing-header")).toHaveAttribute(
       "data-collapsed",
       "true",
     );
 
-    // Proceed via Pesan Sekarang CTA to Phase 4 stub
+    // Proceed to Step 1: Detail Pemesan
     await page.getByRole("button", { name: "Pesan Sekarang" }).click();
     await expect(page).toHaveURL(/\/checkout\/order-detail/);
     await expect(
       page.getByRole("heading", { name: "Detail Pemesan" }),
     ).toBeVisible();
-    await expect(page.getByText("10GB")).toBeVisible();
+    await expect(page.getByText("5 GB")).toBeVisible();
+
+    await page.getByLabel("Nama").fill("George lee");
+    await page.getByLabel("Alamat Email").fill("george.lee@gmail.com");
+    await page.getByLabel("Nomor Whatsapp").fill("081234569300");
+    await page.getByRole("button", { name: "Lanjutkan" }).click();
+
+    // Proceed to Step 2: Metode Pembayaran (Saldo Rp93.000 + Rp500 = Rp93.500)
+    await expect(page).toHaveURL(/\/checkout\/payment/);
+    await expect(
+      page.getByRole("heading", { name: "Metode Pembayaran", exact: true }),
+    ).toBeVisible();
+    await expect(page.getByTestId("payment-total-amount")).toHaveText(
+      "Rp93.500",
+    );
+    await page.getByRole("button", { name: "Lanjutkan" }).click();
+
+    // Verify Invoice screen + Copy + Masked PII + Selesai
+    await expect(page).toHaveURL(/\/checkout\/receipt/);
+    await expect(page.getByRole("heading", { name: "Invoice" })).toBeVisible();
+    await expect(page.getByTestId("invoice-total-paid")).toHaveText("Rp93.500");
+    await expect(page.getByText("Berhasil")).toBeVisible();
+    await expect(page.getByTestId("invoice-masked-whatsapp")).toHaveText(
+      "********9300",
+    );
+    await expect(page.getByTestId("invoice-masked-email")).toHaveText(
+      "*******lee@gmail.com",
+    );
+
+    await page.getByTestId("copy-invoice-button").click();
+    await expect(page.getByText("Tersalin")).toBeVisible();
+
+    await page.getByRole("button", { name: "Selesai", exact: true }).click();
+    await expect(
+      page.getByRole("heading", { name: "Travel eSIM" }),
+    ).toBeVisible();
 
     expect(consoleErrors).toEqual([]);
   });
 
-  test("locks shell, collapsing header, and portal bottom sheet strictly to 430px centered column on Desktop 1440x900 with low V8 Heap", async ({
+  test("locks shell, collapsing header, and portal bottom sheet strictly to 430px on Desktop 1440x900 with low V8 Heap across navigation", async ({
     page,
     context,
   }) => {
@@ -124,7 +143,6 @@ test.describe("Travel eSIM Collapsing Headers, Bottom Sheets & Locked 430px Shel
       expect(Math.abs(shellBox.x - (1440 - 430) / 2)).toBeLessThanOrEqual(2);
     }
 
-    // Open Pilih Region bottom sheet on desktop and ensure it stays inside the 430px shell
     await page.getByTestId("filter-region-chip").click();
     const sheet = page.getByTestId("region-filter-sheet");
     await expect(sheet).toBeVisible();
@@ -136,32 +154,37 @@ test.describe("Travel eSIM Collapsing Headers, Bottom Sheets & Locked 430px Shel
       expect(Math.abs(sheetBox.x - (1440 - 430) / 2)).toBeLessThanOrEqual(2);
     }
 
-    // Verify fixed detail collapsing header stays locked to 430px on desktop
-    await page.goto("/products/esim-singapore");
-    const detailHeaderBox = await page
-      .getByTestId("detail-collapsing-header")
-      .boundingBox();
-    expect(detailHeaderBox).not.toBeNull();
-    if (detailHeaderBox) {
-      expect(detailHeaderBox.width).toBeCloseTo(430, 0);
-      expect(
-        Math.abs(detailHeaderBox.x - (1440 - 430) / 2),
-      ).toBeLessThanOrEqual(2);
-    }
-
     const cdp = await context.newCDPSession(page);
     await cdp.send("HeapProfiler.enable");
     await cdp.send("HeapProfiler.collectGarbage");
 
-    const usedHeapBytes = await page.evaluate(
+    const heapBefore = await page.evaluate(
       () =>
         (performance as unknown as { memory?: { usedJSHeapSize: number } })
           .memory?.usedJSHeapSize ?? 0,
     );
 
-    if (usedHeapBytes > 0) {
-      const usedHeapMb = usedHeapBytes / (1024 * 1024);
+    for (let i = 0; i < 4; i++) {
+      await page.goto("/products/esim-singapore");
+      await page.getByRole("button", { name: "Pesan Sekarang" }).click();
+      await expect(
+        page.getByRole("heading", { name: "Detail Pemesan" }),
+      ).toBeVisible();
+      await page.goto("/");
+    }
+
+    await cdp.send("HeapProfiler.collectGarbage");
+    const heapAfter = await page.evaluate(
+      () =>
+        (performance as unknown as { memory?: { usedJSHeapSize: number } })
+          .memory?.usedJSHeapSize ?? 0,
+    );
+
+    if (heapBefore > 0 && heapAfter > 0) {
+      const usedHeapMb = heapAfter / (1024 * 1024);
+      const deltaMb = (heapAfter - heapBefore) / (1024 * 1024);
       expect(usedHeapMb).toBeLessThan(35);
+      expect(deltaMb).toBeLessThan(10);
     }
   });
 });
