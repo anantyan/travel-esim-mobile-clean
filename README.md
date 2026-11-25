@@ -67,7 +67,7 @@ npm run build:pages       # Production Vite build with GitHub Pages basepath & 4
 
 ## Phased Roadmap (MKP Mobile Travel eSIM Case Study)
 - [x] **Phase 1**: 5-Layer Clean Architecture boilerplate, `430px` Mobile Shell, centered `"Hello World"` stage, Testing Pyramid & GitHub Pages CI/CD.
-- [x] **Phase 2**: `Travel eSIM` catalog, live search, and `Pilih Region` / `Pilih Jenis Produk` bottom sheets.
-- [x] **Phase 3**: Collapsing scroll headers + Product detail page with `Ukuran Data`, `Pilih Jumlah Hari`, `Cakupan negara`, and `"Pesan Sekarang"`.
+- [x] **Phase 2**: `Travel eSIM` catalog, live search, and `Pilih Region` / `Pilih Jenis Produk` bottom sheets with pointer drag-to-dismiss.
+- [x] **Phase 3**: Collapsing scroll headers + Product detail page with touch scroll-snap gallery, `Ukuran Data`, `Pilih Jumlah Hari`, `Cakupan negara`, and `"Pesan Sekarang"`.
 - [x] **Phase 4**: 2-Step Checkout (`Detail Pemesan` form + `Metode Pembayaran`) & digital `Invoice` with PII masking.
-- [ ] **Phase 5**: Comprehensive `/fe-audit` accessibility, visual polish & performance pass.
+- [x] **Phase 5**: Vector Bank Logos (`BCA`, `Mandiri`, `BRI`), Nota/Struk paper ticket UI (`ReceiptSurface` + `ReceiptDivider`), A11y focus trap, concentric SVG radios, & `v1.0.0` release.

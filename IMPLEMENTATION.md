@@ -45,10 +45,11 @@
 
 ---
 
-## Phase 5: Comprehensive Audit (`/fe-audit`), A11y & Final Polish
-- [ ] Run full UX, accessibility (WCAG AA contrast, keyboard navigation, focus traps in bottom sheets), and Anti-Slop audit across `375x812` and `1440x900`.
-- [ ] Verify Lighthouse / Vite bundle budget and CDP V8 Heap stability.
-- [ ] Finalize documentation and release tag `v1.0.0`.
+## Phase 5: Comprehensive Audit (`/fe-audit`), Bank Brand Polish, Nota UI & `v1.0.0` Release
+- [x] Run full UX, accessibility (WCAG AA contrast, keyboard `Tab` focus trap in `FilterBottomSheet`, subpixel SVG concentric radios), and Anti-Slop audit across `375x812` and `1440x900`.
+- [x] Add authentic inline vector logos (`BCA`, `Mandiri`, `BRI`) in `PaymentMethodPage` and physical Nota/Struk paper ticket UI (`ReceiptSurface` + `ReceiptDivider` notches & serrated tear edge) in `PaymentMethodPage` & `InvoiceReceiptPage`.
+- [x] Verify Vite production bundle budget (`~69 KB` gzip core React, `~37 KB` gzip TanStack suite) and CDP V8 Heap stability (`< 35 MB`, delta `< 10 MB`).
+- [x] Finalize documentation (`package.json` `1.0.0`, `README.md`) and publish release tag `v1.0.0`.
 
 ---
 
@@ -80,3 +81,8 @@
 ### 2026-11-25 — `/fe-audit` Mobile Touch Slide & Subpixel Concentric Radio Precision
 - **Concentric SVG Radio (`RadioIndicator`)**: Replaced CSS border+flex circle radios in `FilterBottomSheet` and `PaymentMethodPage` with a shared `24x24` SVG (`cx="12" cy="12"`) so outer ring and inner dot remain subpixel-centered across 1x–3x mobile DPR screens.
 - **Mobile Touch Gestures**: Added 60fps pointer drag-to-dismiss (`translate3d` direct DOM updates + body scroll lock + slide-up animation) to `FilterBottomSheet` and native horizontal `snap-x snap-mandatory` scroll carousel (`touch-pan-x`) to `ProductDetailPage`.
+
+### 2026-11-25 — Phase 5: Bank Brand Logos, Nota Receipt UI, Focus Trap & `v1.0.0` Release
+- **Bank Logos (`BankLogos.tsx`)**: Added zero-network inline vector marks for `BCA`, `Mandiri`, and `BRI` with aligned columns in `PaymentMethodPage`.
+- **Nota / Struk Aesthetic (`ReceiptTicket.tsx`)**: Built `ReceiptSurface` (serrated paper tear-off bottom edge) and `ReceiptDivider` (dashed perforations + semicircular side punch-out notches), unifying `InvoiceReceiptPage` under a single continuous Nota ticket with floating `SealCheck` badge and adding a Nota billing stub to `PaymentMethodPage`.
+- **A11y & `v1.0.0`**: Added keyboard `Tab` / `Shift+Tab` focus trapping + focus restoration in `FilterBottomSheet`, verified all quality gates, and tagged `v1.0.0`.

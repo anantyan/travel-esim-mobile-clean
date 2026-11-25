@@ -1,6 +1,6 @@
 {
   "name": "travel-esim-mobile-clean",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": false,
   "description": "Ultra-Low Browser RAM Mobile-First Clean Architecture Boilerplate (React 19, Vite 6, TanStack Router/Query/Virtual, Zustand 5) — Travel eSIM Case Study",
   "type": "module",

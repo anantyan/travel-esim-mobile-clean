@@ -1,5 +1,9 @@
 import { Button } from "@/commons/components/ui/Button";
 import {
+  ReceiptDivider,
+  ReceiptSurface,
+} from "@/commons/components/ui/ReceiptTicket";
+import {
   formatQuotaSpaced,
   formatRupiah,
   formatRupiahWithCents,
@@ -80,24 +84,26 @@ export function InvoiceReceiptPage() {
         backLabel="Selesai dan kembali ke katalog"
       />
 
-      <main className="flex flex-1 flex-col justify-between rounded-t-[28px] bg-white px-5 pt-7 pb-6">
-        <div className="space-y-4">
-          <div className="rounded-2xl bg-[#F8F9FC] px-4 pt-6 pb-5 text-center">
+      <main className="flex flex-1 flex-col justify-between rounded-t-[28px] bg-white px-5 pt-11 pb-6">
+        <ReceiptSurface testId="receipt-nota-surface" className="pt-11 pb-4">
+          <div className="absolute -top-9 left-1/2 -translate-x-1/2 rounded-full bg-white p-1.5 shadow-xs">
             <SealCheck
-              size={68}
+              size={64}
               weight="fill"
-              className="mx-auto text-[#22C55E]"
+              className="text-[#22C55E]"
               aria-hidden="true"
             />
+          </div>
 
+          <div className="text-center">
             <p
               data-testid="invoice-total-paid"
-              className="mt-3 text-2xl font-extrabold tracking-tight text-[#252A86]"
+              className="text-2xl font-extrabold tracking-tight text-[#252A86]"
             >
               {formatRupiah(latestReceipt.totalPaidIdr)}
             </p>
 
-            <div className="mt-1.5 inline-flex items-center gap-2 text-xs font-medium text-slate-500">
+            <div className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-medium text-slate-500">
               <span data-testid="invoice-number">
                 No. {latestReceipt.invoiceNumber}
               </span>
@@ -118,47 +124,48 @@ export function InvoiceReceiptPage() {
                 )}
               </button>
             </div>
-
-            <dl className="mt-5 space-y-3 border-t border-slate-200/70 pt-4 text-left text-xs">
-              <div className="flex items-center justify-between gap-3">
-                <dt className="text-slate-500">Status</dt>
-                <dd>
-                  <span className="inline-flex rounded-lg bg-emerald-100 px-2.5 py-1 text-xs font-bold text-emerald-700">
-                    Berhasil
-                  </span>
-                </dd>
-              </div>
-              <div className="flex items-center justify-between gap-3">
-                <dt className="text-slate-500">No. Ref</dt>
-                <dd className="font-mono font-medium text-slate-900">
-                  {latestReceipt.referenceNumber}
-                </dd>
-              </div>
-              <div className="flex items-center justify-between gap-3">
-                <dt className="text-slate-500">Tgl Transaksi</dt>
-                <dd className="font-medium text-slate-900">
-                  {latestReceipt.transactionDateLabel}
-                </dd>
-              </div>
-              <div className="flex items-center justify-between gap-3">
-                <dt className="text-slate-500">Waktu Transaksi</dt>
-                <dd className="font-mono font-medium text-slate-900">
-                  {latestReceipt.transactionTimeWibLabel}
-                </dd>
-              </div>
-              <div className="flex items-center justify-between gap-3">
-                <dt className="text-slate-500">Metode pembayaran</dt>
-                <dd className="font-medium text-slate-900">
-                  {latestReceipt.paymentMethod.name}
-                </dd>
-              </div>
-            </dl>
           </div>
 
-          <section
-            aria-label="Detail Transaksi"
-            className="rounded-2xl bg-[#F8F9FC] px-4 py-4"
-          >
+          <ReceiptDivider />
+
+          <dl className="space-y-2.5 text-xs">
+            <div className="flex items-center justify-between gap-3">
+              <dt className="text-slate-500">Status</dt>
+              <dd>
+                <span className="inline-flex rounded-lg bg-emerald-100 px-2.5 py-1 text-xs font-bold text-emerald-700">
+                  Berhasil
+                </span>
+              </dd>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <dt className="text-slate-500">No. Ref</dt>
+              <dd className="font-mono font-medium text-slate-900">
+                {latestReceipt.referenceNumber}
+              </dd>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <dt className="text-slate-500">Tgl Transaksi</dt>
+              <dd className="font-medium text-slate-900">
+                {latestReceipt.transactionDateLabel}
+              </dd>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <dt className="text-slate-500">Waktu Transaksi</dt>
+              <dd className="font-mono font-medium text-slate-900">
+                {latestReceipt.transactionTimeWibLabel}
+              </dd>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <dt className="text-slate-500">Metode pembayaran</dt>
+              <dd className="font-medium text-slate-900">
+                {latestReceipt.paymentMethod.name}
+              </dd>
+            </div>
+          </dl>
+
+          <ReceiptDivider />
+
+          <section aria-label="Detail Transaksi">
             <h2 className="text-sm font-bold text-slate-900">
               Detail Transaksi
             </h2>
@@ -214,10 +221,9 @@ export function InvoiceReceiptPage() {
             </p>
           </section>
 
-          <section
-            aria-label="Detail Pembayaran"
-            className="rounded-2xl bg-[#F8F9FC] px-4 py-4"
-          >
+          <ReceiptDivider />
+
+          <section aria-label="Detail Pembayaran">
             <h2 className="text-sm font-bold text-slate-900">
               Detail Pembayaran
             </h2>
@@ -237,7 +243,7 @@ export function InvoiceReceiptPage() {
               </div>
             </dl>
           </section>
-        </div>
+        </ReceiptSurface>
 
         <div className="sticky bottom-0 z-20 -mx-5 mt-6 border-t border-slate-100 bg-white/95 px-5 pt-3.5 pb-1 backdrop-blur-xs">
           <Button fullWidth onClick={handleFinish}>

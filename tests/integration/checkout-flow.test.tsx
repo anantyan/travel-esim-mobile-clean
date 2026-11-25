@@ -70,11 +70,15 @@ describe("2-Step Checkout Flow (Detail Pemesan -> Metode Pembayaran -> Invoice)"
     await user.type(screen.getByLabelText("Nomor Whatsapp"), "081234569300");
     await user.click(screen.getByRole("button", { name: "Lanjutkan" }));
 
-    // Step 2: Metode Pembayaran
+    // Step 2: Metode Pembayaran (authentic vector bank logos + Nota summary)
     expect(
       await screen.findByRole("heading", { name: "Metode Pembayaran" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Rp200.000")).toBeInTheDocument();
+    expect(screen.getByTestId("bank-logo-BCA_VA")).toBeInTheDocument();
+    expect(screen.getByTestId("bank-logo-MANDIRI_VA")).toBeInTheDocument();
+    expect(screen.getByTestId("bank-logo-BRI_VA")).toBeInTheDocument();
+    expect(screen.getByTestId("payment-nota-summary")).toBeInTheDocument();
 
     // Switch to VA BCA (fee Rp2.500 -> Total Rp71.500)
     await user.click(screen.getByRole("radio", { name: /VA BCA/i }));
@@ -85,10 +89,11 @@ describe("2-Step Checkout Flow (Detail Pemesan -> Metode Pembayaran -> Invoice)"
     });
     await user.click(screen.getByRole("button", { name: "Lanjutkan" }));
 
-    // Step 3: Invoice
+    // Step 3: Invoice (unified Nota paper receipt)
     expect(
       await screen.findByRole("heading", { name: "Invoice" }),
     ).toBeInTheDocument();
+    expect(screen.getByTestId("receipt-nota-surface")).toBeInTheDocument();
     expect(screen.getByTestId("invoice-total-paid")).toHaveTextContent(
       "Rp71.500",
     );

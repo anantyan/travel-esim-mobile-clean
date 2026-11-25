@@ -140,4 +140,27 @@ describe("Travel eSIM Catalog & Bottom Sheet Integration", () => {
       ).not.toBeInTheDocument();
     });
   });
+
+  it("traps keyboard Tab focus inside Pilih Region bottom sheet until closed", async () => {
+    const user = userEvent.setup();
+    renderCatalogRoute("/");
+
+    await screen.findByText("eSIM Singapore");
+    await user.click(screen.getByTestId("filter-region-chip"));
+
+    const dialog = screen.getByRole("dialog", { name: "Pilih Region" });
+    expect(dialog.contains(document.activeElement)).toBe(true);
+
+    await user.tab();
+    expect(dialog.contains(document.activeElement)).toBe(true);
+    await user.tab();
+    expect(dialog.contains(document.activeElement)).toBe(true);
+
+    await user.keyboard("{Escape}");
+    await waitFor(() => {
+      expect(
+        screen.queryByRole("dialog", { name: "Pilih Region" }),
+      ).not.toBeInTheDocument();
+    });
+  });
 });

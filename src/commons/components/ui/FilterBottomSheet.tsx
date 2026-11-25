@@ -76,11 +76,41 @@ export function FilterBottomSheet<T extends string>({
     }
 
     const previousOverflow = document.body.style.overflow;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
     document.body.style.overflow = "hidden";
+
+    const checkedRadio = sheetRef.current?.querySelector<HTMLElement>(
+      'input[type="radio"]:checked',
+    );
+    checkedRadio?.focus({ preventScroll: true });
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         onClose();
+        return;
+      }
+
+      if (event.key === "Tab" && sheetRef.current) {
+        const focusables = Array.from(
+          sheetRef.current.querySelectorAll<HTMLElement>(
+            'button:not([disabled]):not([tabindex="-1"]), input:not([disabled])',
+          ),
+        );
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (!first || !last) {
+          return;
+        }
+        const active = document.activeElement;
+        if (event.shiftKey) {
+          if (active === first || !sheetRef.current.contains(active)) {
+            event.preventDefault();
+            last.focus();
+          }
+        } else if (active === last || !sheetRef.current.contains(active)) {
+          event.preventDefault();
+          first.focus();
+        }
       }
     };
 
@@ -92,6 +122,7 @@ export function FilterBottomSheet<T extends string>({
         window.clearTimeout(closeTimerRef.current);
         closeTimerRef.current = null;
       }
+      previouslyFocused?.focus?.({ preventScroll: true });
     };
   }, [open, onClose]);
 

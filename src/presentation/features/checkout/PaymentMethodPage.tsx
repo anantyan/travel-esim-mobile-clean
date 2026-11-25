@@ -1,5 +1,14 @@
+import {
+  BcaLogo,
+  BriLogo,
+  MandiriLogo,
+} from "@/commons/components/brands/BankLogos";
 import { Button } from "@/commons/components/ui/Button";
 import { RadioIndicator } from "@/commons/components/ui/RadioIndicator";
+import {
+  ReceiptDivider,
+  ReceiptSurface,
+} from "@/commons/components/ui/ReceiptTicket";
 import { cn } from "@/commons/utils/cn";
 import {
   formatOrderDateDdMmYyyy,
@@ -23,31 +32,31 @@ import { useCallback, useEffect, useMemo } from "react";
 function PaymentMethodLogo({ method }: { method: PaymentMethod }) {
   if (method.category === "balance") {
     return (
-      <span className="flex h-7 w-9 shrink-0 items-center justify-center rounded-md text-slate-900">
-        <Wallet size={22} weight="fill" aria-hidden="true" />
+      <span className="flex w-16 shrink-0 items-center justify-start text-slate-900">
+        <Wallet size={24} weight="fill" aria-hidden="true" />
       </span>
     );
   }
 
   if (method.code === "BCA_VA") {
     return (
-      <span className="flex h-7 w-9 shrink-0 items-center justify-center rounded-md bg-[#EBF3FE] font-sans text-[10px] font-black tracking-tight text-[#005BAA]">
-        BCA
+      <span className="flex w-16 shrink-0 items-center justify-start">
+        <BcaLogo />
       </span>
     );
   }
 
   if (method.code === "MANDIRI_VA") {
     return (
-      <span className="flex h-7 w-9 shrink-0 items-center justify-center rounded-md bg-[#EEF4FA] font-sans text-[9px] font-black tracking-tight text-[#003D79]">
-        MDR
+      <span className="flex w-16 shrink-0 items-center justify-start">
+        <MandiriLogo />
       </span>
     );
   }
 
   return (
-    <span className="flex h-7 w-9 shrink-0 items-center justify-center rounded-md bg-[#EAF2FB] font-sans text-[10px] font-black tracking-tight text-[#00529C]">
-      BRI
+    <span className="flex w-16 shrink-0 items-center justify-start">
+      <BriLogo />
     </span>
   );
 }
@@ -263,30 +272,35 @@ export function PaymentMethodPage() {
           </section>
         </div>
 
-        <div className="mt-8">
-          <dl className="space-y-2.5 text-sm">
+        <div className="mt-7">
+          <ReceiptSurface testId="payment-nota-summary" className="pt-4 pb-3">
+            <dl className="space-y-2 text-sm">
+              <div className="flex items-center justify-between gap-4">
+                <dt className="text-slate-500">Harga</dt>
+                <dd className="font-semibold text-slate-900">
+                  {formatRupiahWithCents(packagePriceIdr)}
+                </dd>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <dt className="text-slate-500">Biaya Layanan</dt>
+                <dd className="font-semibold text-slate-900">
+                  {formatRupiah(feeIdr)}
+                </dd>
+              </div>
+            </dl>
+
+            <ReceiptDivider className="my-3" />
+
             <div className="flex items-center justify-between gap-4">
-              <dt className="text-slate-500">Harga</dt>
-              <dd className="font-semibold text-slate-900">
-                {formatRupiahWithCents(packagePriceIdr)}
-              </dd>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <dt className="text-slate-500">Biaya Layanan</dt>
-              <dd className="font-semibold text-slate-900">
-                {formatRupiah(feeIdr)}
-              </dd>
-            </div>
-            <div className="flex items-center justify-between gap-4 border-t border-slate-100 pt-3">
-              <dt className="text-sm font-bold text-slate-900">Total</dt>
-              <dd
+              <span className="text-sm font-bold text-slate-900">Total</span>
+              <span
                 data-testid="payment-total-amount"
                 className="text-lg font-extrabold tracking-tight text-[#252A86]"
               >
                 {formatRupiah(totalIdr)}
-              </dd>
+              </span>
             </div>
-          </dl>
+          </ReceiptSurface>
 
           <div className="sticky bottom-0 z-20 -mx-5 mt-4 border-t border-slate-100 bg-white/95 px-5 pt-3.5 pb-1 backdrop-blur-xs">
             <Button
