@@ -1,4 +1,4 @@
-import type { EsimRegionFilter, EsimTypeFilter } from "@/domain";
+import type { EsimRegion, EsimRegionFilter, EsimTypeFilter } from "@/domain";
 
 export const REGION_OPTIONS: ReadonlyArray<{
   readonly value: EsimRegionFilter;
@@ -20,3 +20,25 @@ export const PRODUCT_TYPE_OPTIONS: ReadonlyArray<{
   { value: "instant", label: "Instants" },
   { value: "topupable", label: "Topupable" },
 ];
+
+export const REGION_DISPLAY_LABELS: Record<EsimRegion, string> = {
+  asia: "Region Asia",
+  america: "Region America",
+  oceania: "Region Oceania",
+  europe: "Region Europe",
+  africa: "Region Africa",
+};
+
+export function getRegionFilterLabel(value: EsimRegionFilter): string {
+  return (
+    REGION_OPTIONS.find((option) => option.value === value)?.label ??
+    "Semua Region"
+  );
+}
+
+export function getTypeFilterLabel(value: EsimTypeFilter): string {
+  return (
+    PRODUCT_TYPE_OPTIONS.find((option) => option.value === value)?.label ??
+    "Semua Jenis"
+  );
+}

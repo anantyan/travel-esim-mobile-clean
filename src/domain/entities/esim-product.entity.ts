@@ -14,14 +14,19 @@ export interface EsimProduct {
   readonly description: string;
   readonly imageUrl: string;
   readonly features: readonly string[];
+  readonly coverageCountries: readonly string[];
+  readonly galleryUrls: readonly string[];
+  readonly dataSizeOptions: readonly string[];
+  readonly dayOptions: readonly number[];
 }
 
 export interface PaymentMethod {
   readonly id: string;
   readonly code: string;
   readonly name: string;
-  readonly category: "ewallet" | "virtual_account" | "qris";
+  readonly category: "balance" | "virtual_account" | "ewallet" | "qris";
   readonly feeIdr: number;
+  readonly balanceIdr?: number;
   readonly description: string;
 }
 

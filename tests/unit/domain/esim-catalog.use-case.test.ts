@@ -3,6 +3,7 @@ import {
   CreateOrderReceiptUseCase,
   GetEsimCatalogUseCase,
   GetEsimDetailUseCase,
+  esimCatalogFilterSchema,
 } from "@/domain";
 import { describe, expect, it } from "vitest";
 
@@ -14,9 +15,25 @@ describe("Domain Use Cases (Static eSIM Repository)", () => {
 
   it("returns full catalog when default filters are applied", async () => {
     const items = await getCatalog.execute();
-    expect(items.length).toBeGreaterThanOrEqual(4);
-    expect(items.some((item) => item.name === "eSIM Singapore")).toBe(true);
-    expect(items.some((item) => item.name === "eSIM Indonesia")).toBe(true);
+    expect(items).toHaveLength(7);
+    expect(items[0]?.name).toBe("eSIM Singapore");
+    expect(items[1]?.name).toBe("eSIM Indonesia");
+    expect(items[0]?.coverageCountries).toContain("Singapore");
+    expect(items[0]?.dataSizeOptions).toEqual(["3GB", "5GB", "10GB", "15GB"]);
+    expect(items[0]?.dayOptions).toEqual([7, 14, 24, 30]);
+  });
+
+  it("recovers cleanly when invalid region or type query params are parsed", () => {
+    const parsed = esimCatalogFilterSchema.parse({
+      search: "  bali ",
+      region: "mars",
+      type: "invalid_type",
+    });
+    expect(parsed).toEqual({
+      search: "bali",
+      region: "all",
+      type: "all",
+    });
   });
 
   it("filters by region, product type, and search keyword", async () => {
@@ -47,6 +64,9 @@ describe("Domain Use Cases (Static eSIM Repository)", () => {
     if (!product) return;
 
     const methods = await repository.listPaymentMethods();
+    const saldo = methods.find((m) => m.code === "SALDO");
+    expect(saldo?.balanceIdr).toBe(200000);
+
     const bcaVa = methods.find((m) => m.code === "BCA_VA");
     expect(bcaVa).toBeDefined();
     if (!bcaVa) return;

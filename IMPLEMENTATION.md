@@ -20,26 +20,26 @@
 ---
 
 ## Phase 2: Travel eSIM Catalog, Search & Bottom Sheet Filters (Figma Screen 1–3)
-- [ ] Implement `#252A86` Deep Royal Indigo mobile top header (`Travel eSIM`) with back button and search input (`Cari Produk yang Anda Mau`).
-- [ ] Implement dual filter pills (`Semua Region`, `Semua Jenis`) with portal-locked Bottom Sheets (`Pilih Region` & `Pilih Jenis Produk`) featuring radio options, `Reset`, and single-line `Terapkan` pill button.
-- [ ] Sync search, region, and type filters via `@tanstack/react-router` Zod search params validation (`esimCatalogFilterSchema`).
-- [ ] Render 2-column eSIM product grid (`eSIM Singapore`, `eSIM Indonesia`, `eSIM USA`, `eSIM South Korea`, etc.) displaying destination visual, package name, region, quota/type badge (`Instant` / `Topupable`), formatted Rupiah price, and `"Beli"` action.
-- [ ] Add unit, integration, and Playwright E2E tests covering search, region/type bottom-sheet filtering, and mobile/desktop viewport lock.
+- [x] Implement `#252A86` Deep Royal Indigo mobile top header (`Travel eSIM`) with back/reset button and search input (`Cari Produk yang Anda Mau`).
+- [x] Implement dual filter pills (`Semua Region`, `Semua Jenis`) with portal-locked Bottom Sheets (`Pilih Region` & `Pilih Jenis Produk`) featuring radio options, `Reset`, and single-line `Terapkan` pill button.
+- [x] Sync search, region, and type filters via `@tanstack/react-router` Zod search params validation (`esimCatalogFilterSchema`).
+- [x] Render 2-column eSIM product grid (`eSIM Singapore`, `eSIM Indonesia`, `eSIM USA`, `eSIM South Korea`, etc.) displaying destination visual, package name, region, type badge (`Instant` / `Topupable`), formatted Rupiah price, and navigation to `/products/$slug`.
+- [x] Add unit, integration, and Playwright E2E tests covering search, region/type bottom-sheet filtering, and mobile/desktop `430px` portal viewport lock.
 
 ---
 
-## Phase 3: Product Detail Page (`/products/$slug`)
-- [ ] Implement file-based route `/products/$slug` via `GetEsimDetailUseCase`.
-- [ ] Display full package details: package title, hero visual, description, active duration (`Masa Aktif`), internet quota (`Kuota Internet`), product type badge, and price.
-- [ ] Implement sticky bottom CTA bar (locked inside `430px` shell) with `"Konfirmasi Beli"` pill button storing selection in `useCheckoutFlowStore` (`Zustand v5`) and navigating to `/checkout/payment`.
-- [ ] Add unit, integration, and E2E navigation tests for detail flow and missing-slug fallback state.
+## Phase 3: Product Detail Page (`/products/$slug` — Figma Screen 4)
+- [ ] Implement full `/products/$slug` page via `GetEsimDetailUseCase` with full-bleed hero image carousel & indicator dots.
+- [ ] Display dynamic price, `Cakupan negara` card, interactive `Ukuran Data` (`3GB`, `5GB`, `10GB`, `15GB`) and `Pilih Jumlah Hari` (`07`, `14`, `24`, `30`) selector pills, plus 5-bullet `Deskripsi`.
+- [ ] Implement sticky bottom CTA (`Pesan Sekarang`) storing variant & product selection in `useCheckoutFlowStore` (`Zustand v5`) and navigating to `/checkout/order-detail`.
+- [ ] Add unit, integration, and E2E tests for variant pricing selection and missing-slug fallback.
 
 ---
 
-## Phase 4: Payment Method (`/checkout/payment`) & Order Receipt (`/checkout/receipt`)
-- [ ] Implement payment method selection screen (`QRIS`, `BCA Virtual Account`, `Mandiri Virtual Account`, `GoPay`) with tactile radio rows and `"Bayar Sekarang"` CTA.
-- [ ] Execute `CreateOrderReceiptUseCase` to generate deterministic order ID, timestamp, eSIM activation ICCID/QR metadata, and persist receipt in memory via `Zustand v5`.
-- [ ] Implement Struk Pembelian (`/checkout/receipt`) screen with downloadable/copyable reference summary and CTA back to catalog.
+## Phase 4: 2-Step Checkout (`Detail Pemesanan` -> `Metode Pembayaran` -> `Invoice`, Figma Screen 5–7)
+- [ ] Implement Step 1 (`/checkout/order-detail`) with `1 — 2` header stepper, `Ringkasan Paket`, and `Data Pelanggan` form (`Nama`, `Alamat Email`, `Nomor Whatsapp`) validated via `React Hook Form` + `Zod`.
+- [ ] Implement Step 2 (`/checkout/payment`) with `✓ — 2` header stepper, `Saldo (Rp200.000)`, `VA BCA`, `VA Mandiri`, `VA BRI`, fee calculation, and `Lanjutkan` CTA.
+- [ ] Execute `CreateOrderReceiptUseCase` and render `/checkout/receipt` (`Invoice`) with `✓ — ✓` stepper, Copy Invoice button, masked WhatsApp & Email privacy display, and `Selesai` CTA.
 - [ ] Add complete checkout flow E2E test and V8 Heap memory leak check across repeated multi-page navigation.
 
 ---
@@ -62,3 +62,7 @@
 - **Verification & Adjustments**:
   - Updated `playwright.config.ts` to run E2E against production `vite preview` (`4173`) so Chromium CDP V8 JS Heap measurement reflects the tree-shaken production bundle (`< 35 MB`) rather than Vite HMR dev overhead (`42.6 MB`).
   - Visually inspected `1440x900` and `375x812` screenshots (0 console errors) and tightened the Phase 1 status pill to stay single-line on `375px` screens.
+
+### 2026-11-25 — Phase 2: Travel eSIM Catalog, Search & Bottom Sheets
+- **Figma Alignment**: Integrated all 7 Figma UI screens into our domain/data specifications (`coverageCountries`, `dataSizeOptions`, `dayOptions`, `Saldo / VA BCA / Mandiri / BRI`).
+- **Catalog & Portal Sheets**: Built `#252A86` `Travel eSIM` header, live search input, `FilterBottomSheet` (`Pilih Region` & `Pilih Jenis Produk`) strictly constrained inside `#mobile-shell-portal` (`430px`), 2-column destination grid, Zod-validated TanStack Router search params, and `/products/$slug` navigation stub.

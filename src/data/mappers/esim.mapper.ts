@@ -20,6 +20,10 @@ export function mapRawProductToEntity(dto: RawEsimProductDto): EsimProduct {
     description: dto.description,
     imageUrl: dto.image_url,
     features: dto.features,
+    coverageCountries: dto.coverage_countries,
+    galleryUrls: dto.gallery_urls,
+    dataSizeOptions: dto.data_size_options,
+    dayOptions: dto.day_options,
   };
 }
 
@@ -32,6 +36,7 @@ export function mapRawPaymentMethodToEntity(
     name: dto.name,
     category: dto.category,
     feeIdr: dto.fee_idr,
+    balanceIdr: dto.balance_idr,
     description: dto.description,
   };
 }

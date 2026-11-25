@@ -12,9 +12,9 @@ export const esimRegionFilterSchema = z.enum([
 export const esimTypeFilterSchema = z.enum(["all", "instant", "topupable"]);
 
 export const esimCatalogFilterSchema = z.object({
-  search: z.string().trim().max(80).default(""),
-  region: esimRegionFilterSchema.default("all"),
-  type: esimTypeFilterSchema.default("all"),
+  search: z.string().trim().max(80).catch(""),
+  region: esimRegionFilterSchema.catch("all"),
+  type: esimTypeFilterSchema.catch("all"),
 });
 
 export type EsimRegionFilter = z.infer<typeof esimRegionFilterSchema>;

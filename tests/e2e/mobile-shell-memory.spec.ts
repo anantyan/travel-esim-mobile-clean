@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
-test.describe("Locked Mobile Shell & Ultra-Low Browser RAM Verification", () => {
-  test("renders centered Hello World cleanly on Mobile 375x812 without horizontal overflow or console errors", async ({
+test.describe("Travel eSIM Catalog, Bottom Sheets & Locked 430px Shell", () => {
+  test("supports search, region/type bottom sheet filters, and detail navigation on Mobile 375x812", async ({
     page,
   }) => {
     const consoleErrors: string[] = [];
@@ -17,51 +17,83 @@ test.describe("Locked Mobile Shell & Ultra-Low Browser RAM Verification", () => 
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto("/");
 
-    const heading = page.getByRole("heading", { name: "Hello World" });
-    await expect(heading).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Travel eSIM" }),
+    ).toBeVisible();
+    await expect(page.getByText("eSIM Singapore")).toBeVisible();
+    await expect(page.getByText("Rp69.000")).toBeVisible();
+    await expect(page.getByText("eSIM Indonesia")).toBeVisible();
+    await expect(page.getByText("Rp52.000")).toBeVisible();
 
     const hasHorizontalOverflow = await page.evaluate(
       () => document.documentElement.scrollWidth > window.innerWidth,
     );
     expect(hasHorizontalOverflow).toBe(false);
 
-    const shell = page.getByTestId("mobile-app-shell");
-    const shellBox = await shell.boundingBox();
-    expect(shellBox).not.toBeNull();
-    if (shellBox) {
-      expect(shellBox.width).toBeLessThanOrEqual(375);
-    }
+    // Filter by Region: Amerika
+    await page.getByTestId("filter-region-chip").click();
+    await expect(page.getByTestId("region-filter-sheet")).toBeVisible();
+    await page.getByRole("radio", { name: "Amerika" }).click();
+    await page.getByRole("button", { name: "Terapkan" }).click();
+
+    await expect(page).toHaveURL(/region=america/);
+    await expect(page.getByText("eSIM USA")).toBeVisible();
+    await expect(page.getByText("eSIM Singapore")).toBeHidden();
+
+    // Reset Region filter
+    await page.getByTestId("filter-region-chip").click();
+    await page
+      .getByTestId("region-filter-sheet")
+      .getByRole("button", { name: "Reset", exact: true })
+      .click();
+    await page.getByRole("button", { name: "Terapkan" }).click();
+    await expect(page.getByText("eSIM Singapore")).toBeVisible();
+
+    // Filter by Type: Topupable
+    await page.getByTestId("filter-type-chip").click();
+    await expect(page.getByTestId("type-filter-sheet")).toBeVisible();
+    await page.getByRole("radio", { name: "Topupable" }).click();
+    await page.getByRole("button", { name: "Terapkan" }).click();
+
+    await expect(page).toHaveURL(/type=topupable/);
+    await expect(page.getByText("eSIM Indonesia")).toBeVisible();
+    await expect(page.getByText("eSIM Singapore")).toBeHidden();
+
+    // Navigate to product detail stub
+    await page.getByTestId("esim-card-esim-indonesia").click();
+    await expect(page).toHaveURL(/\/products\/esim-indonesia/);
+    await expect(
+      page.getByRole("heading", { name: "eSIM Indonesia" }),
+    ).toBeVisible();
 
     expect(consoleErrors).toEqual([]);
   });
 
-  test("stays strictly locked to 430px centered mobile column on Desktop 1440x900 with low V8 JS Heap", async ({
+  test("locks both shell and portal bottom sheet strictly to 430px centered column on Desktop 1440x900 with low V8 Heap", async ({
     page,
     context,
   }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");
 
-    const heading = page.getByRole("heading", { name: "Hello World" });
-    await expect(heading).toBeVisible();
-
     const shell = page.getByTestId("mobile-app-shell");
     const shellBox = await shell.boundingBox();
     expect(shellBox).not.toBeNull();
     if (shellBox) {
       expect(shellBox.width).toBeCloseTo(430, 0);
-      const expectedLeft = (1440 - 430) / 2;
-      expect(Math.abs(shellBox.x - expectedLeft)).toBeLessThanOrEqual(2);
+      expect(Math.abs(shellBox.x - (1440 - 430) / 2)).toBeLessThanOrEqual(2);
     }
 
-    const headingBox = await heading.boundingBox();
-    expect(headingBox).not.toBeNull();
-    if (headingBox) {
-      const headingCenterX = headingBox.x + headingBox.width / 2;
-      const headingCenterY = headingBox.y + headingBox.height / 2;
-      expect(Math.abs(headingCenterX - 720)).toBeLessThanOrEqual(8);
-      expect(headingCenterY).toBeGreaterThan(250);
-      expect(headingCenterY).toBeLessThan(650);
+    // Open Pilih Region bottom sheet on desktop and ensure it stays inside the 430px shell
+    await page.getByTestId("filter-region-chip").click();
+    const sheet = page.getByTestId("region-filter-sheet");
+    await expect(sheet).toBeVisible();
+
+    const sheetBox = await sheet.boundingBox();
+    expect(sheetBox).not.toBeNull();
+    if (sheetBox) {
+      expect(sheetBox.width).toBeLessThanOrEqual(430);
+      expect(Math.abs(sheetBox.x - (1440 - 430) / 2)).toBeLessThanOrEqual(2);
     }
 
     const cdp = await context.newCDPSession(page);
